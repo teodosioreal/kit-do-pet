@@ -1,5 +1,5 @@
 // Textos das páginas de vendas (/cao e /gato). Edite à vontade.
-// Regras: sem preço riscado, sem contador, sem "somente hoje" e sem prometer rastreio.
+// Regras: sem preço riscado, sem contador, sem "somente hoje" e sem prometer localização do pet.
 import type { Species } from "@/lib/products";
 
 export type Testimonial = { name: string; city: string; text: string; petName?: string };

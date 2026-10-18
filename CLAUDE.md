@@ -98,14 +98,42 @@ src/app/api/               webhooks, PDFs, cron, "encontrei este pet"
 - [x] Etapa 5 — webhook Kiwify e liberação de acesso
 - [x] Etapa 6 — páginas de vendas
 - [x] Etapa 7 — painel do administrador
-- [ ] Etapa 8 — lembretes no WhatsApp
+- [x] Etapa 8 — lembretes no WhatsApp
 
 ### Pendências externas (dono do projeto)
-Ver a seção "Configuração externa" do README.
+Ver a seção "Configuração externa" do README (Supabase, Resend, Evolution, Vercel,
+Kiwify, Meta Pixel). Nada disso foi feito ainda: o app nunca rodou em produção.
+
+### Próximos passos conhecidos
+- **Confirmar o formato real do webhook da Kiwify** (principalmente como os order
+  bumps chegam) com uma compra de teste em `/api/webhooks/kiwify/teste` e ajustar
+  `src/lib/payments/kiwify.ts`. A assinatura HMAC-SHA1 em `?signature=` também não é
+  documentada oficialmente — confirmar no primeiro webhook real (`/admin/webhooks`
+  mostra "assinatura ok/inválida").
+- Preencher depoimentos (`src/content/sales.ts`) e o contato nos textos legais.
+- Enviar os PDFs dos guias em `/admin/guias`.
+- Ideias não pedidas (não implementadas): plaquinha de coleira em PDF, histórico de
+  "pet encontrado" na área do cliente, exclusão de conta pelo próprio cliente (LGPD
+  hoje é atendida por contato).
 
 ## Como validar mudanças
 ```bash
-npm run lint && npx tsc --noEmit && npm run build
+npm run lint && npm run typecheck && npm run build
 ```
-A migração pode ser testada num Postgres local simulando os esquemas `auth` e
-`storage` do Supabase (veja o histórico de commits da etapa 1).
+
+### Teste de ponta a ponta (local)
+Foi assim que tudo foi validado:
+1. `npx supabase start` (precisa de Docker) aplica a migração num Supabase real local.
+2. `.env.local` com as chaves locais, `KIWIFY_WEBHOOK_TOKEN=testtoken`, IDs de produto
+   fictícios (ex.: `prod-kit`) e `EVOLUTION_API_URL` apontando para um servidor HTTP
+   simples que só registra as requisições (simula o WhatsApp).
+3. Enviar webhooks assinados com `openssl dgst -sha1 -hmac testtoken` (exemplo no README).
+4. Pegar o link `/acesso/...` da mensagem simulada e navegar com Playwright
+   (Chromium já instalado em `/opt/pw-browsers`).
+5. Cron: `curl -H "Authorization: Bearer $CRON_SECRET" localhost:3000/api/cron/lembretes`.
+
+Cuidados que já causaram bugs:
+- No Supabase, extensões ficam no esquema `extensions`; funções com
+  `set search_path = public` não enxergam `gen_random_bytes` (por isso o código público usa md5 + uuid).
+- React 19 limpa formulários após server actions: em erro, devolva os valores digitados (`values`) e use como `defaultValue`.
+- O menu inferior fixo da área do cliente cobre elementos `sticky bottom-*` baixos.
