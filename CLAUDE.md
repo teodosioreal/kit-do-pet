@@ -123,7 +123,10 @@ Kiwify, Meta Pixel). Nada disso foi feito ainda: o app nunca rodou em produção
   documentada oficialmente — confirmar no primeiro webhook real (`/admin/webhooks`
   mostra "assinatura ok/inválida").
 - Preencher depoimentos (`src/content/sales.ts`) e o contato nos textos legais.
-- Enviar os PDFs dos guias em `/admin/guias`.
+- Enviar os PDFs dos guias em `/admin/guias`. Os 4 PDFs prontos estão em `assets/guias/`
+  (gerados por `scripts/guias/build.mjs`; textos em `scripts/guias/content-*.mjs`, ilustrações
+  em `scripts/guias/art.mjs`). Para regenerar: `node scripts/guias/build.mjs` (precisa de
+  Playwright com Chromium e `pdfunite`). Depois de mudar um guia, reenvie o PDF em `/admin/guias`.
 - Ideias não pedidas (não implementadas): plaquinha de coleira em PDF, histórico de
   "pet encontrado" na área do cliente, exclusão de conta pelo próprio cliente (LGPD
   hoje é atendida por contato).

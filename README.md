@@ -190,7 +190,9 @@ O app envia `PageView` nas páginas de vendas e `InitiateCheckout` ao clicar em 
 (e repassa os parâmetros `utm_*` para o checkout).
 
 ### 7. Últimos ajustes
-- **Guias**: envie os PDFs (versões cão e gato) em `/admin/guias`.
+- **Guias**: os 4 PDFs já estão prontos em `assets/guias/` (adestramento e petiscos,
+  versões cão e gato). Envie cada um no lugar certo em `/admin/guias`. Para editar os textos,
+  mude `scripts/guias/content-*.mjs` e rode `node scripts/guias/build.mjs`.
 - **Depoimentos**: preencha a lista `testimonials` em `src/content/sales.ts`
   (a seção só aparece quando houver depoimentos).
 - **Textos legais**: complete o e-mail de contato em `src/app/(site)/privacidade/page.tsx`
