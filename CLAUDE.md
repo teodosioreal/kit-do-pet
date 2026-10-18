@@ -97,7 +97,7 @@ src/app/api/               webhooks, PDFs, cron, "encontrei este pet"
 - [x] Etapa 4 — página pública com QR
 - [x] Etapa 5 — webhook Kiwify e liberação de acesso
 - [x] Etapa 6 — páginas de vendas
-- [ ] Etapa 7 — painel do administrador
+- [x] Etapa 7 — painel do administrador
 - [ ] Etapa 8 — lembretes no WhatsApp
 
 ### Pendências externas (dono do projeto)
