@@ -38,7 +38,7 @@ const rich = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 const icon = (name, size = 44) => (name && ICONS[name] ? `<span class="ico" style="width:${size}px;height:${size}px">${ICONS[name]()}</span>` : "");
 const food = (name) => (FOODS[name] ? `<span class="food">${FOODS[name]()}</span>` : "");
 
-function renderBlock(b, theme) {
+function renderBlock(b) {
   switch (b.type) {
     case "p":
       return `<p>${rich(b.text)}</p>`;
@@ -215,7 +215,7 @@ tr:nth-child(even) td{background:#fafafa}
 
 <section class="intro">
   <h1>${esc(g.introTitle)}</h1>
-  ${g.intro.map((b) => renderBlock(b, theme)).join("")}
+  ${g.intro.map((b) => renderBlock(b)).join("")}
   <h2>${icon("star", 34)}<span>O que você vai encontrar</span></h2>
   <ol class="toc">${toc}</ol>
 </section>
@@ -233,11 +233,11 @@ ${chapters
     let restHtml = "";
     for (let i = 0; i < rest.length; i++) {
       if (rest[i].type === "h2" && rest[i + 1]) {
-        restHtml += `<div class="keep">${renderBlock(rest[i], theme)}${renderBlock(rest[i + 1], theme)}</div>`;
+        restHtml += `<div class="keep">${renderBlock(rest[i])}${renderBlock(rest[i + 1])}</div>`;
         i++;
-      } else restHtml += renderBlock(rest[i], theme);
+      } else restHtml += renderBlock(rest[i]);
     }
-    return `<div class="keep">${head}${ch.blocks.slice(0, keep).map((b) => renderBlock(b, theme)).join("")}</div>${restHtml}`;
+    return `<div class="keep">${head}${ch.blocks.slice(0, keep).map((b) => renderBlock(b)).join("")}</div>${restHtml}`;
   })()}
 </section>`,
   )
@@ -246,7 +246,7 @@ ${chapters
 <section class="closing">
   <div class="art">${g.closingArt}</div>
   <h1>${esc(g.closingTitle)}</h1>
-  ${g.closing.map((b) => renderBlock(b, theme)).join("")}
+  ${g.closing.map((b) => renderBlock(b)).join("")}
   <p class="legal">${esc(g.legal)}</p>
 </section>
 </body></html>`;
