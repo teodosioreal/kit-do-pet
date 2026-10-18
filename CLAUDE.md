@@ -95,7 +95,7 @@ src/app/api/               webhooks, PDFs, cron, "encontrei este pet"
 - [x] Etapa 2 — área do cliente e cadastro do pet
 - [x] Etapa 3 — PDFs
 - [x] Etapa 4 — página pública com QR
-- [ ] Etapa 5 — webhook Kiwify e liberação de acesso
+- [x] Etapa 5 — webhook Kiwify e liberação de acesso
 - [ ] Etapa 6 — páginas de vendas
 - [ ] Etapa 7 — painel do administrador
 - [ ] Etapa 8 — lembretes no WhatsApp

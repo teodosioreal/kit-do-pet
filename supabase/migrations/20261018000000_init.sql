@@ -3,8 +3,6 @@
 -- Tudo o que envolve pagamento, direitos e envios é escrito pelo servidor
 -- usando a service role (que ignora RLS).
 
-create extension if not exists pgcrypto;
-
 -- ---------------------------------------------------------------------------
 -- Perfis (1:1 com auth.users)
 -- ---------------------------------------------------------------------------
@@ -131,7 +129,8 @@ declare
   i int;
 begin
   loop
-    bytes := gen_random_bytes(8);
+    -- md5 de um uuid aleatório: 16 bytes uniformes, sem depender do pgcrypto
+    bytes := decode(md5(gen_random_uuid()::text || clock_timestamp()::text), 'hex');
     result := '';
     for i in 0..7 loop
       result := result || substr(alphabet, 1 + (get_byte(bytes, i) % length(alphabet)), 1);

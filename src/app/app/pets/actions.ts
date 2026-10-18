@@ -8,7 +8,8 @@ import { PET_PHOTOS_BUCKET } from "@/lib/storage";
 import type { PublicFields } from "@/lib/types";
 import { PUBLIC_FIELD_LABELS } from "@/lib/types";
 
-export type FormState = { error?: string; fieldErrors?: Record<string, string> };
+/** Em caso de erro devolvemos os valores digitados (o React limpa o formulário após a ação). */
+export type FormState = { error?: string; fieldErrors?: Record<string, string>; values?: Record<string, string> };
 
 const optionalText = (max: number) =>
   z.string().trim().max(max).transform((v) => (v === "" ? null : v));
@@ -33,22 +34,22 @@ const petSchema = z.object({
 });
 
 function readPetForm(formData: FormData) {
-  const raw = Object.fromEntries(
+  const raw: Record<string, string> = Object.fromEntries(
     ["name", "species", "breed", "sex", "color", "birth_date", "birth_place", "traits", "notes", "tutor_name", "tutor_whatsapp", "photo_path"].map(
       (k) => [k, String(formData.get(k) ?? "")],
     ),
   );
-  return petSchema.safeParse(raw);
+  return { raw, parsed: petSchema.safeParse(raw) };
 }
 
 export async function createPet(_prev: FormState, formData: FormData): Promise<FormState> {
   const { supabase, user } = await requireUser();
-  const parsed = readPetForm(formData);
-  if (!parsed.success) return { fieldErrors: flatten(parsed.error) };
+  const { raw, parsed } = readPetForm(formData);
+  if (!parsed.success) return { fieldErrors: flatten(parsed.error), values: raw };
   const data = parsed.data;
 
   const tutorWhatsapp = data.tutor_whatsapp ? normalizePhone(data.tutor_whatsapp) : null;
-  if (data.tutor_whatsapp && !tutorWhatsapp) return { fieldErrors: { tutor_whatsapp: "WhatsApp inválido. Use DDD + número." } };
+  if (data.tutor_whatsapp && !tutorWhatsapp) return { fieldErrors: { tutor_whatsapp: "WhatsApp inválido. Use DDD + número." }, values: raw };
   if (data.photo_path && !data.photo_path.startsWith(`${user.id}/`)) return { error: "Foto inválida." };
 
   const { data: pet, error } = await supabase
@@ -58,8 +59,9 @@ export async function createPet(_prev: FormState, formData: FormData): Promise<F
     .single();
 
   if (error) {
-    if (error.message.includes("PET_LIMIT_REACHED")) return { error: "Você atingiu o limite de pets da sua conta." };
-    return { error: "Não foi possível salvar. Tente de novo." };
+    if (error.message.includes("PET_LIMIT_REACHED")) return { error: "Você atingiu o limite de pets da sua conta.", values: raw };
+    console.error("[pets] erro ao criar", error.message);
+    return { error: "Não foi possível salvar. Tente de novo.", values: raw };
   }
   revalidatePath("/app");
   redirect(`/app/pets/${pet.id}?novo=1`);
@@ -67,12 +69,12 @@ export async function createPet(_prev: FormState, formData: FormData): Promise<F
 
 export async function updatePet(petId: string, _prev: FormState, formData: FormData): Promise<FormState> {
   const { supabase, user } = await requireUser();
-  const parsed = readPetForm(formData);
-  if (!parsed.success) return { fieldErrors: flatten(parsed.error) };
+  const { raw, parsed } = readPetForm(formData);
+  if (!parsed.success) return { fieldErrors: flatten(parsed.error), values: raw };
   const data = parsed.data;
 
   const tutorWhatsapp = data.tutor_whatsapp ? normalizePhone(data.tutor_whatsapp) : null;
-  if (data.tutor_whatsapp && !tutorWhatsapp) return { fieldErrors: { tutor_whatsapp: "WhatsApp inválido. Use DDD + número." } };
+  if (data.tutor_whatsapp && !tutorWhatsapp) return { fieldErrors: { tutor_whatsapp: "WhatsApp inválido. Use DDD + número." }, values: raw };
   if (data.photo_path && !data.photo_path.startsWith(`${user.id}/`)) return { error: "Foto inválida." };
 
   const { data: current } = await supabase.from("pets").select("photo_path").eq("id", petId).single();
@@ -82,7 +84,10 @@ export async function updatePet(petId: string, _prev: FormState, formData: FormD
     .from("pets")
     .update({ ...data, tutor_whatsapp: tutorWhatsapp })
     .eq("id", petId);
-  if (error) return { error: "Não foi possível salvar. Tente de novo." };
+  if (error) {
+    console.error("[pets] erro ao atualizar", error.message);
+    return { error: "Não foi possível salvar. Tente de novo.", values: raw };
+  }
 
   if (current.photo_path && current.photo_path !== data.photo_path) {
     await supabase.storage.from(PET_PHOTOS_BUCKET).remove([current.photo_path]);

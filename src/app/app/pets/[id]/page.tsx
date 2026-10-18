@@ -37,7 +37,7 @@ export default async function PetPage({ params, searchParams }: PageProps<"/app/
 
       {novo && (
         <p className="rounded-2xl bg-mint-100 p-4 text-sm font-semibold text-green-800">
-          🎉 {pet.name} foi cadastrado! Agora é só gerar os documentos abaixo.
+          🎉 Cadastro de {pet.name} concluído! Agora é só gerar os documentos abaixo.
         </p>
       )}
 
@@ -75,7 +75,7 @@ export default async function PetPage({ params, searchParams }: PageProps<"/app/
       <section className="card flex flex-col gap-4">
         <h2 className="text-lg font-bold">Página do QR code</h2>
         <p className="text-sm text-gray-600">
-          Quem escanear o QR code (no RG ou numa plaquinha na coleira) vê a página do {pet.name} e consegue falar com você.
+          Quem escanear o QR code (no RG ou numa plaquinha na coleira) vê a página de {pet.name} e consegue falar com você.
         </p>
         <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}

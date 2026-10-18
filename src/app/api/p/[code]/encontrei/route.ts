@@ -61,7 +61,7 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ code: 
   if (!number) return NextResponse.json({ message: "Não foi possível avisar o tutor agora." }, { status: 503 });
 
   const lines = [
-    `🐾 Alguém encontrou o(a) *${pet.name}* e escaneou o QR code!`,
+    `🐾 Alguém encontrou *${pet.name}* e escaneou o QR code!`,
     hasLocation
       ? `📍 Localização: https://www.google.com/maps?q=${latitude!.toFixed(6)},${longitude!.toFixed(6)}${accuracy ? ` (precisão de ~${Math.round(accuracy)} m)` : ""}`
       : "📍 A pessoa preferiu não enviar a localização.",

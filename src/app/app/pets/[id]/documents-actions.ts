@@ -19,7 +19,7 @@ export async function sendDocumentsToWhatsapp(petId: string): Promise<{ ok: bool
   }
 
   const p = pet as Pet;
-  await sendWhatsappText(profile.whatsapp, `Aqui estão os documentos do(a) ${p.name} 🐾`);
+  await sendWhatsappText(profile.whatsapp, `Aqui estão os documentos de ${p.name} 🐾`);
   for (const slug of DOC_SLUGS) {
     const pdf = await renderPetDocument(supabase, p, slug);
     const result = await sendWhatsappDocument(profile.whatsapp, pdf, docFileName(slug, p), DOC_TITLES[slug]);
