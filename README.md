@@ -17,7 +17,7 @@ Quem for continuar o desenvolvimento (pessoa ou Claude Code): leia o `CLAUDE.md`
    - [Supabase](#1-supabase)
    - [Resend (e-mail)](#2-resend-e-mail)
    - [Evolution API (WhatsApp)](#3-evolution-api-whatsapp)
-   - [Vercel (publicar)](#4-vercel-publicar)
+   - [Hostinger (publicar)](#4-hostinger-publicar)
    - [Kiwify (produtos, order bumps e webhook)](#5-kiwify)
    - [Meta Pixel](#6-meta-pixel)
    - [Últimos ajustes](#7-últimos-ajustes)
@@ -36,7 +36,7 @@ Quem for continuar o desenvolvimento (pessoa ou Claude Code): leia o `CLAUDE.md`
 4. Na área do cliente (`/app`) ele cadastra o pet, as vacinas e vermífugos, gera
    os PDFs (sempre atualizados), escolhe o que aparece na página pública e baixa os guias.
 5. Reembolso ou chargeback na Kiwify revoga os direitos daquele pedido.
-6. Todo dia às 9h (Brasília) o cron envia os lembretes de quem comprou o bump.
+6. Todo dia às 9h (Brasília) o GitHub Actions chama a rotina que envia os lembretes de quem comprou o bump.
 
 ## Rodando localmente
 
@@ -74,7 +74,7 @@ Faça na ordem. Cada item diz quais variáveis preencher (veja `.env.example`).
 3. **Project Settings → API** (ou **API Keys**): copie
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - chave `anon` / publishable → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - chave `service_role` / secret → `SUPABASE_SERVICE_ROLE_KEY` (**secreta**: só na Vercel)
+   - chave `service_role` / secret → `SUPABASE_SERVICE_ROLE_KEY` (**secreta**: só nas variáveis da Hostinger)
 4. **Authentication → Sign In / Providers → Email**: deixe o Email ligado e
    **desligue "Allow new users to sign up"** (só quem compra ganha conta; o webhook cria o usuário).
 5. **Authentication → URL Configuration**:
@@ -105,19 +105,37 @@ Use a sua instância já existente:
 
 O app usa `POST /message/sendText/{instancia}` e `POST /message/sendMedia/{instancia}` (Evolution v2).
 
-### 4. Vercel (publicar)
-1. Em https://vercel.com, **Add New → Project** e importe o repositório `kit-do-pet`.
-2. Framework: Next.js (detectado sozinho). Não mude os comandos.
-3. Em **Environment Variables**, cadastre todas as variáveis do `.env.example`.
-   - `NEXT_PUBLIC_SITE_URL`: o endereço final (ex.: `https://kitdopet.com.br`)
+### 4. Hostinger (publicar)
+Precisa do plano **Business** ou **Cloud** (eles rodam "Node.js web apps").
+Na hospedagem Premium/Single não funciona, porque o app precisa de Node.js no servidor.
+
+1. **hPanel → Sites → Adicionar site → Node.js web app → Importar repositório Git**.
+   Clique em **Conectar com o GitHub**, autorize o acesso ao repositório `kit-do-pet`
+   e escolha o branch `main`.
+2. **Domínio**: escolha um subdomínio do seu domínio que já está na Hostinger
+   (ex.: `pet.tudoemdia.blog.br`). O blog principal não é afetado. Se o DNS do domínio
+   não estiver na Hostinger, crie lá o registro que o hPanel indicar.
+3. **Configurações de build** (normalmente detectadas sozinhas):
+   - Framework: Next.js · Node.js: 22
+   - Comando de build: `npm run build` · Comando de início: `npm start`
+4. **Variáveis de ambiente**: cadastre todas as do `.env.example` (dá para importar um
+   arquivo `.env`). Alterou alguma depois? Faça um novo deploy para valer.
+   - `NEXT_PUBLIC_SITE_URL`: o endereço final (ex.: `https://pet.tudoemdia.blog.br`)
    - `APP_SECRET` e `CRON_SECRET`: textos aleatórios longos (gere com `openssl rand -hex 32`
      ou num gerador de senhas, com 40+ caracteres)
    - `ADMIN_EMAILS`: seu e-mail (é o único que abre `/admin`)
-4. **Deploy**. Depois, em **Settings → Domains**, conecte seu domínio e atualize
-   `NEXT_PUBLIC_SITE_URL` e as URLs do Supabase (passo 1.5) se mudarem.
-5. O cron diário já está em `vercel.json` (12:00 UTC = 9:00 de Brasília). A Vercel
-   envia o `CRON_SECRET` automaticamente.
-6. Para entrar como admin a primeira vez: no Supabase, **Authentication → Users →
+5. **Deploy**. A cada `git push` no `main` a Hostinger publica de novo (se a opção de
+   deploy automático estiver ligada no painel do app).
+6. **Lembretes diários** (rotina que roda todo dia às 9h de Brasília): já está pronta em
+   `.github/workflows/lembretes.yml`, usando o GitHub Actions. No GitHub, abra o repositório
+   → **Settings → Secrets and variables → Actions → New repository secret** e crie:
+   - `APP_URL` = `https://pet.tudoemdia.blog.br` (sem barra no final)
+   - `CRON_SECRET` = o mesmo valor cadastrado na Hostinger
+
+   Para testar na hora: aba **Actions → Lembretes diários → Run workflow**.
+   (Alternativa: hPanel → Avançado → Cron Jobs com o comando
+   `curl -H "Authorization: Bearer SEU_CRON_SECRET" https://SEU-DOMINIO/api/cron/lembretes`.)
+7. Para entrar como admin a primeira vez: no Supabase, **Authentication → Users →
    Add user → Create new user**, com seu e-mail (marque "Auto Confirm User"). Depois
    entre em `/entrar` com esse e-mail e aceite os termos. O menu "Admin" aparece no topo.
 
@@ -143,7 +161,7 @@ A Kiwify vende e recebe o pagamento; o app entrega o acesso. Configure assim:
    - URL: `https://SEU-DOMINIO/api/webhooks/kiwify`
    - Produtos: os 5 produtos acima
    - Eventos: **compra aprovada**, **reembolso** e **chargeback**
-   - Copie o **token** → `KIWIFY_WEBHOOK_TOKEN` (e faça um novo deploy na Vercel)
+   - Copie o **token** → `KIWIFY_WEBHOOK_TOKEN` (e faça um novo deploy na Hostinger)
 5. **Teste do formato** (recomendado antes de vender): o formato dos order bumps no
    webhook não é documentado oficialmente.
    1. Crie um webhook temporário apontando para `https://SEU-DOMINIO/api/webhooks/kiwify/teste`
@@ -192,7 +210,7 @@ app funciona, mas não envia e-mails/WhatsApp.
 | `/admin` | painel do administrador |
 | `/api/webhooks/kiwify` | webhook de compras |
 | `/api/webhooks/kiwify/teste` | captura o corpo bruto para teste |
-| `/api/cron/lembretes` | rotina diária (chamada pela Vercel) |
+| `/api/cron/lembretes` | rotina diária (chamada pelo GitHub Actions) |
 
 ## Trocar Kiwify por Cakto
 O pagamento é isolado em `src/lib/payments/`. Para a Cakto:

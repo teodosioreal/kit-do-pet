@@ -4,8 +4,8 @@ import { runDailyReminders } from "@/lib/reminders";
 
 export const maxDuration = 300;
 
-// Chamado pelo cron da Vercel (vercel.json) uma vez por dia.
-// A Vercel envia "Authorization: Bearer <CRON_SECRET>".
+// Chamado uma vez por dia pelo GitHub Actions (.github/workflows/lembretes.yml)
+// com "Authorization: Bearer <CRON_SECRET>".
 export async function GET(request: NextRequest) {
   const secret = env.cronSecret;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {

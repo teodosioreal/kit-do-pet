@@ -37,7 +37,7 @@ export default function PrivacyPage() {
       </p>
       <h2>5. Com quem compartilhamos</h2>
       <p>
-        Com fornecedores que nos ajudam a operar o serviço: hospedagem (Vercel), banco de dados e arquivos (Supabase),
+        Com fornecedores que nos ajudam a operar o serviço: hospedagem (Hostinger), banco de dados e arquivos (Supabase),
         envio de e-mail (Resend), envio de WhatsApp e a plataforma de pagamento (Kiwify). Não vendemos seus dados.
       </p>
       <h2>6. Por quanto tempo guardamos</h2>

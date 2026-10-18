@@ -41,7 +41,8 @@ Os guias mostram a versão da espécie dos pets do cliente (as duas se tiver cã
 - Next.js 16 (App Router) + TypeScript + Tailwind 4 (classes utilitárias próprias via `@utility` em `globals.css`)
 - `cacheComponents` desligado (modelo clássico: páginas com sessão são dinâmicas)
 - Supabase: Postgres + RLS, Auth por link mágico, Storage (`pet-photos` e `guides`, ambos privados)
-- Vercel (hospedagem + cron diário em `vercel.json`)
+- **Hostinger** (Node.js web app, deploy pelo GitHub) — o dono NÃO usa Vercel
+- GitHub Actions para o cron diário (`.github/workflows/lembretes.yml`)
 - Resend (e-mail), Evolution API (WhatsApp), `@react-pdf/renderer` (PDF no servidor)
 
 ## Mapa do código
@@ -86,7 +87,9 @@ src/app/api/               webhooks, PDFs, cron, "encontrei este pet"
 - **PDFs** são gerados na hora com os dados atuais (segunda via ilimitada).
 - **Página pública** `/p/<codigo>`: o tutor escolhe os campos em `pets.public_fields`.
   "Encontrei este pet" tem limite de envios (por pet e por IP com hash).
-- **Cron** `/api/cron/lembretes` diário às 12:00 UTC (09:00 de Brasília), protegido por `CRON_SECRET`.
+- **Cron** `/api/cron/lembretes` chamado pelo GitHub Actions às 12:00 UTC (09:00 de Brasília), protegido por `CRON_SECRET`.
+- **Hospedagem**: tudo que o `next build` precisa fica em `dependencies` (a Hostinger pode instalar sem devDependencies).
+  `npm start` usa a porta da variável `PORT`. Exports `maxDuration` nas rotas não têm efeito fora da Vercel.
   Envia 3 dias antes e no dia; renovação 30 dias antes do vencimento; tudo registrado
   em `reminder_log` com chave única para não duplicar.
 
@@ -101,7 +104,7 @@ src/app/api/               webhooks, PDFs, cron, "encontrei este pet"
 - [x] Etapa 8 — lembretes no WhatsApp
 
 ### Pendências externas (dono do projeto)
-Ver a seção "Configuração externa" do README (Supabase, Resend, Evolution, Vercel,
+Ver a seção "Configuração externa" do README (Supabase, Resend, Evolution, Hostinger,
 Kiwify, Meta Pixel). Nada disso foi feito ainda: o app nunca rodou em produção.
 
 ### Próximos passos conhecidos

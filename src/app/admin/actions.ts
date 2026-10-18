@@ -104,7 +104,7 @@ export async function previewWebhook(eventId: string): Promise<AdminResult> {
   }
 }
 
-/** URL assinada para o navegador enviar o PDF do guia direto ao Storage (sem limite de tamanho da Vercel). */
+/** URL assinada para o navegador enviar o PDF do guia direto ao Storage (sem passar o arquivo pelo servidor do app). */
 export async function createGuideUploadUrl(product: string, species: string): Promise<{ path: string; token: string } | null> {
   await requireAdmin();
   if (!GUIDE_KEYS.includes(product as GuideKey) || !["dog", "cat"].includes(species)) return null;
