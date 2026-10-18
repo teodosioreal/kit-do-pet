@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   cacheComponents: false,
   // @react-pdf usa módulos Node que não devem ser empacotados.
   serverExternalPackages: ["@react-pdf/renderer"],
+  // Fontes usadas nos PDFs (lidas do disco em tempo de execução).
+  outputFileTracingIncludes: { "/**": ["./assets/fonts/**"] },
   images: {
     remotePatterns: [{ protocol: "https", hostname: "*.supabase.co" }],
   },
