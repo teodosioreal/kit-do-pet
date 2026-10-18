@@ -94,6 +94,13 @@ src/app/api/               webhooks, PDFs, cron, "encontrei este pet"
   saída do build = `.next`). Tudo que o `next build` precisa fica em `dependencies`
   (a Hostinger pode instalar sem devDependencies). `npm start` usa a porta da variável
   `PORT`. Exports `maxDuration` nas rotas não têm efeito fora da Vercel.
+- **Build com Webpack, não Turbopack** (`npm run build` = `next build --webpack`): o servidor
+  da Hostinger tem glibc 2.28 e o SWC nativo do Next 16 exige 2.29+. Lá só carrega o
+  compilador WASM (`@next/swc-wasm-nodejs`, mesma versão do `next`, já nas dependências),
+  e o Turbopack não roda com WASM. Por isso também: `next.config.mjs` (não `.ts`) e
+  Tailwind via `@tailwindcss/postcss` (`postcss.config.mjs`). Validado num container
+  `almalinux:8` (glibc 2.28): build, páginas e PDF ok. Ao atualizar o `next`, atualize
+  `@next/swc-wasm-nodejs` para a mesma versão. O `next dev` local continua com Turbopack.
 
 ## Status
 - [x] Etapa 1 — estrutura do projeto e banco

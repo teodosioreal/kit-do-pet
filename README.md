@@ -119,6 +119,8 @@ Na hospedagem Premium/Single não funciona, porque o app precisa de Node.js no s
    - Framework: Next.js · Node.js: 22
    - Diretório raiz: deixe em branco ou `/` (o app está na raiz do repositório)
    - Comando de build: `npm run build` · Diretório de saída: `.next` · Comando de início: `npm start`
+   - O build usa Webpack (`next build --webpack`) de propósito: o Linux da hospedagem é
+     antigo demais para o compilador padrão do Next 16. Não troque para Turbopack.
 4. **Variáveis de ambiente**: cadastre todas as do `.env.example` (dá para importar um
    arquivo `.env`). Alterou alguma depois? Faça um novo deploy para valer.
    - `NEXT_PUBLIC_SITE_URL`: o endereço final (ex.: `https://pet.tudoemdia.blog.br`)
