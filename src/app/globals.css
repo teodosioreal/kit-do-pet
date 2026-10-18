@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-ink: #1f2937;
+  --color-mint-100: #dcfce7;
+  --color-mint-500: #22c55e;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #fffaf5;
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@utility btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+@utility btn-primary {
+    @apply btn bg-brand-500 text-white shadow-sm hover:bg-brand-600;
+  }
+
+@utility btn-secondary {
+    @apply btn border-2 border-brand-200 bg-white text-brand-700 hover:bg-brand-50;
+  }
+
+@utility btn-whatsapp {
+    @apply btn bg-[#25D366] text-white hover:brightness-95;
+  }
+
+@utility card {
+    @apply rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5;
+  }
+
+@utility input {
+    @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-base outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200;
+  }
+
+@utility label {
+    @apply mb-1 block text-sm font-semibold text-gray-700;
+  }
