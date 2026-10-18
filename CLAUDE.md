@@ -88,10 +88,12 @@ src/app/api/               webhooks, PDFs, cron, "encontrei este pet"
 - **Página pública** `/p/<codigo>`: o tutor escolhe os campos em `pets.public_fields`.
   "Encontrei este pet" tem limite de envios (por pet e por IP com hash).
 - **Cron** `/api/cron/lembretes` chamado pelo GitHub Actions às 12:00 UTC (09:00 de Brasília), protegido por `CRON_SECRET`.
-- **Hospedagem**: tudo que o `next build` precisa fica em `dependencies` (a Hostinger pode instalar sem devDependencies).
-  `npm start` usa a porta da variável `PORT`. Exports `maxDuration` nas rotas não têm efeito fora da Vercel.
   Envia 3 dias antes e no dia; renovação 30 dias antes do vencimento; tudo registrado
   em `reminder_log` com chave única para não duplicar.
+- **Hospedagem (Hostinger)**: o app fica na raiz do repositório (diretório raiz = `/`,
+  saída do build = `.next`). Tudo que o `next build` precisa fica em `dependencies`
+  (a Hostinger pode instalar sem devDependencies). `npm start` usa a porta da variável
+  `PORT`. Exports `maxDuration` nas rotas não têm efeito fora da Vercel.
 
 ## Status
 - [x] Etapa 1 — estrutura do projeto e banco
